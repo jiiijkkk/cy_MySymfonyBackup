@@ -1,0 +1,27 @@
+<center>
+	{% for msg in msgs %}
+	<table border=1>
+		<tr>
+			<td width=400>
+				<a href="mailto:{{ msg.mail }}">
+					{{ msg.name }}
+				</a>
+			</td>
+			<td width=200 align="right">
+				{{ msg.timestamp|date("Y/m/d h:i:s") }}
+			</td>
+		</tr>
+		<tr>
+			<td colspan=2 >
+				{{ msg.contant }}
+			</td>
+		</tr>
+	</table>
+	<br>
+	{% endfor %}
+
+	<form action="{{ path('AcmeMsgBundle_homepage') }}" method="post" {{ form_enctype(form) }}>
+		{{ form_widget(form) }}
+	<input type="submit" />
+	</form>
+</center>

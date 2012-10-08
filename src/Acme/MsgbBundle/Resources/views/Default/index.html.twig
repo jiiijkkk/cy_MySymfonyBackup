@@ -1,0 +1,197 @@
+{% extends 'AcmeMsgbBundle:Base:base.html.twig' %}
+{% block body %}
+    <p align="right">
+        {{ admin.account }}
+        ({{ admin.nickname }})
+        [<a href="{{ path('AcmeMsgbBundle_admin_menu' ) }}">Admin Menu</a>]
+        [<a href="{{ path('AcmeMsgbBundle_logout',{'page_size':page_size , 'page':page} ) }}">Logout</a>/<a href="{{ path('AcmeMsgbBundle_disaccount',{'page_size':page_size , 'page':page} ) }}">Disaccount</a>]</p>
+    <center>
+        <font size=20>Simple Message Board</font>
+        <br>
+        <br>
+	    <!-- leave message -->
+        <form action="{{ path('AcmeMsgbBundle_homepage') }}" method="post" {{ form_enctype(form) }} onsubmit="return validateForm();"  >
+
+
+            <font size=5>A</font>ccount&nbsp;:&nbsp;{{ form_widget(form.account) }}&nbsp;&nbsp;&nbsp;&nbsp;
+            <font size=5>N</font>ickname&nbsp;:&nbsp;{{ form_widget(form.nickname) }}&nbsp;&nbsp;&nbsp;&nbsp;
+            <font size=5>M</font>obile&nbsp;:&nbsp;{{ form_widget(form.mobile) }}
+            <br>
+            <font size=5>T</font>itle&nbsp;:&nbsp;{{ form_widget(form.title) }}&nbsp;&nbsp;&nbsp;&nbsp;
+            <font size=5>C</font>ontant&nbsp;:&nbsp;{{ form_widget(form.contant) }} 
+            {{ form_rest(form) }}
+
+            <input type="hidden" name="keep_page_size" value= "{{ page_size }}" />
+            <input type="submit" value="Comment"/>
+        </form>
+	    <!-- End of leave message -->
+
+	    <!-- VALIDATE FORM -->
+        <script>
+            function validateForm(){
+                var vilad_account=new RegExp("^[a-zA-Z0-9]{4,12}$");
+                var vilad_nickname=new RegExp("^.{2,12}$");
+                var vilad_mobile=new RegExp("^[0-9]{9,12}$");
+                var vilad_title=new RegExp("^.{1,30}$");
+                var alert_msg="";
+                if(!vilad_account.test(document.getElementById('comment_account').value))
+                    alert_msg+="Account : Please insert 4~12 alphabets or numbers\n";
+                if(!vilad_nickname.test(document.getElementById('comment_nickname').value))
+                    alert_msg+="Nickname : Please insert 2~12 characters\n";
+                if(!vilad_mobile.test(document.getElementById('comment_mobile').value))
+                    alert_msg+="Mobile : Please insert 9~12 numbers\n";
+                if(!vilad_title.test(document.getElementById('comment_title').value))
+                    alert_msg+="Title : Please insert 1~30 characters\n";
+                if(alert_msg!=""){
+                    alert(alert_msg);
+                    return false;
+                }
+                else
+                    return true;
+            }
+        </script>
+	    <!-- END OF VALIDATE FORM -->
+
+	    <br>
+	    <!-- leave message error -->
+            {% for error in errors %}
+                {{ error.message }}<br>
+            {% endfor %}
+	    <!-- End of leave message error -->
+	    <br>
+	    <!-- List -->
+	    {% for msg in msgs %}
+            <table>
+                <tr>
+                    <th width=500>
+                        {{ msg.title }}
+                        ...
+                        From
+                        {{ msg.ip }}
+                        @
+                        {{ msg.time|date("Y/m/d H:i:s") }}
+                    </th>
+                    <th>
+                        <a href="{{ path('AcmeMsgbBundle_single',{'page_size':page_size , 'page':page , 'id':msg.id} ) }}">[Single View]</a>
+                    </th>
+                    <th>                        
+                        <a href="{{ path('AcmeMsgbBundle_kill',{'page_size':page_size , 'id':msg.id} ) }}">[Delete]</a>
+                    </th>
+                </tr>
+                <tr>
+                    <td colspan=3>
+                        {{ msg.account }}
+                        ({{ msg.nickname }})
+			            {% image '@AcmeMsgbBundle/Resources/public/images/mobile.png' %}
+				            <img src="{{ asset_url }}" title="{{ msg.mobile }}" />
+			            {% endimage %}
+			            {% image '@AcmeMsgbBundle/Resources/public/images/ip.gif' %}
+				            <img src="{{ asset_url }}" title="{{ msg.ip }}" />
+			            {% endimage %}
+                        says:<br>
+                        {{ msg.contant }}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=3>
+                        <div class="mid" id="show_reply_{{ msg.id }}" style="display: block;">
+                            {% if msg.replyer!="" %}
+                                {% if replyers_in_this_page[msg.id] is not defined %}
+                                    (Deleted Admin)
+                                {% else %}
+                                    {{ replyers_in_this_page[msg.id].account }}
+                                    ({{ replyers_in_this_page[msg.id].nickname }})
+                                {% endif %}
+                                reply
+                                @
+                                {{ msg.reply_time|date("Y/m/d H:i:s") }}
+                                :<br>
+                                {{ msg.reply_contant }}
+                                <a onclick="javascript:ShwHid('{{ msg.id }}')" href="javascript:">[Edit]</a>
+                                <a href="{{ path('AcmeMsgbBundle_kill_reply',{ 'page_size':page_size , 'page':page , 'id':msg.id , 'action': 'homepage' }) }}" method="post">[Delete]</a>
+                            {% else %}
+                                <a onclick="javascript:ShwHid('{{ msg.id }}')" href="javascript:">
+                                    [Reply]
+                                </a>
+                            {% endif %}
+                        </div>
+                        <div class="mid" id="reply_{{ msg.id }}" style="display: none;">
+                            <form action="{{ path('AcmeMsgbBundle_quick_reply',{'page_size':page_size , 'page':page , 'id':msg.id} ) }}" method="POST">
+                                <table>
+                                    <tr>
+                                        <td rowspan=2>
+                                            <textarea name="contant">{{ msg.reply_contant }}</textarea>
+                                        </td>
+                                        <td>
+                                            <a onclick="javascript:ShwHid('{{ msg.id }}')" href="javascript:">
+                                                Cancel[x]
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type="submit" value="Reply" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            </br>
+        {% endfor %}
+        <script language="JavaScript">
+            function ShwHid(divId){
+                if(document.getElementById("reply_"+divId).style.display == 'none'){
+                    document.getElementById("reply_"+divId).style.display='block';
+                    document.getElementById("show_reply_"+divId).style.display='none';
+                }
+                else{
+                    document.getElementById("reply_"+divId).style.display='none';
+                    document.getElementById("show_reply_"+divId).style.display='block';
+                }
+            }
+        </script>
+	    <!-- End of list -->
+	    <br>
+	    <!-- Page Select -->
+	    {% if page!=1 %}
+		    <a href="{{ path('AcmeMsgbBundle_homepage',{'page_size':page_size , 'page':page-1} ) }}">
+                &lt;-Previous</a>
+	    {% endif %}
+	    {% for i in 1..page_num %}
+            {% if page!=i %}
+		        <a href="{{ path('AcmeMsgbBundle_homepage',{'page_size':page_size , 'page':i} ) }}">
+            {% endif %}
+                {{ i }}{% if page!=i %}</a>
+            {% endif %}
+	    {% endfor %}
+	    {% if page!=page_num %}
+		    <a href="{{ path('AcmeMsgbBundle_homepage',{'page_size':page_size , 'page':page+1} ) }}">
+                Next-&gt;</a>
+	    {% endif %}
+	    <!-- End of Page Select -->
+        <table border=1>
+            <tr>
+                <td>
+	                <!-- Change page size -->
+	                <form method="POST" action="{{ path('AcmeMsgbBundle_homepage') }}">PageSize :<input size=1 name="change_page_size" type="text" value={{ page_size }}><input type="submit" value="Requery" /></form>
+	                <!-- End of Change page size -->
+                </td>
+                <td>
+                    <!-- Changing Theme -->
+                    <form method="POST" name="stylesheet_form" action="{{ path('AcmeMsgbBundle_homepage',{ 'page_size':page_size , 'page':page }) }}">
+                        ChangeTheme :
+                        <select name="stylesheet" onchange="document.stylesheet_form.submit()">
+                            <option {% if stylesheet == "Default" %} SELECTED {% endif %} value="Default">Default</option>
+                            <option {% if stylesheet == "Black_in_White" %} SELECTED {% endif %} value="Black_in_White">Black in White</option>
+                            <option {% if stylesheet == "White_in_Black" %} SELECTED {% endif %} value="White_in_Black">White in Black</option>
+                        </select>
+                    </form>
+                    <!-- End of Changing Theme -->
+                </td>
+            </tr>
+        </table>
+    </center>
+{% endblock %}

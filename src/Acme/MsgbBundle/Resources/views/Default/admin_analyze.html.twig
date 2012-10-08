@@ -1,0 +1,372 @@
+{% extends 'AcmeMsgbBundle:Base:base.html.twig' %}
+{% block body %}
+    {% javascripts
+        '@AcmeMsgbBundle/Resources/public/js/datetimepicker.js'
+        'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'
+    %}
+        <script src='{{ asset_url }}' type='text/javascript'></script>
+    {% endjavascripts %}
+    {# http://www.javascriptkit.com/script/script2/tengcalendar.shtml #}
+    <p style="text-align:right;"><a href="{{ path('AcmeMsgbBundle_admin_edit_classes') }}">[Edit Classes]</a></p>
+    <center>
+        <font size=20 >Analyze</font><br>
+    </center>    
+    <form method='POST' action="{{ path('AcmeMsgbBundle_admin_analyze') }}" >
+        User :
+        <input name="user" type="text" value="{{ user }}" >
+        <input name="set_user" type="submit" value="Query" />
+        {% if user!=null %}<input name="clear_user" type="submit" value="Clear" />{% endif %}
+    </form>
+    <form method='POST' action="{{ path('AcmeMsgbBundle_admin_analyze') }}" >
+        Action :
+        <select name="action" onchange="this.form.submit()" method='POST'>
+            <option value="All"
+                {% if action =="All" %} selected="selected"{% endif %}>All</option>
+            <option value="message"
+                {% if action =="message" %} selected="selected"{% endif %}>Message</option>
+            <option value="signup"
+                {% if action =="signup" %} selected="selected"{% endif %}>Signup</option>
+            <option value="login"
+                {% if action =="login" %} selected="selected"{% endif %}>Login</option>
+            <option value="logout"
+                {% if action =="logout" %} selected="selected"{% endif %}>Logout</option>
+            <option value="login&logout"
+                {% if action =="login&logout" %} selected="selected"{% endif %}>Login & Logout</option>
+            <option value="reply"
+                {% if action =="reply" %} selected="selected"{% endif %}>Reply</option>
+            <option value="remove_reply"
+                {% if action =="remove_reply" %} selected="selected"{% endif %}>Remove Reply</option>
+            <option value="remove_message"
+                {% if action =="remove_message" %} selected="selected"{% endif %}>Remove Message</option>
+            <option value="disaccount"
+                {% if action =="disaccount" %} selected="selected"{% endif %}>Disaccount</option>
+        </select>
+    </form>  
+    <form method='POST' action="{{ path('AcmeMsgbBundle_admin_analyze') }}">
+        from
+        <input name="start_datetime" id="start_datetime" type="text" size="25" value="{{ start_datetime }}" readonly="readonly" />
+        <a href="javascript:NewCal('start_datetime','ddmmyyyy',true,24)">{% image '@AcmeMsgbBundle/Resources/public/images/cal.gif' %}<img src="{{ asset_url }}" width="16" height="16" border="0" alt="Pick a date" />{% endimage %}</a>
+        to
+        <input name="end_datetime" id="end_datetime" type="text" size="25" value="{{ end_datetime }}" readonly="readonly" />
+        <a href="javascript:NewCal('end_datetime','ddmmyyyy',true,24)">{% image '@AcmeMsgbBundle/Resources/public/images/cal.gif' %}<img src="{{ asset_url }}" width="16" height="16" border="0" alt="Pick a date" />{% endimage %}</a>
+        <input type="submit" name="set_date" value="Set" onclick="if(!check_cal()){window.alert('the Start Date is later than the End Date');return false;}" />
+        {% if (start_flag or end_flag) %}<input type="submit" name="clear_date" value="Clear" />{% endif %}
+    </form>
+    <script>
+        function check_cal(){
+            var str=this.start_datetime.value;
+            var patt=/[0-9]+/;
+            var start_d = patt.exec(str);
+            str = str.substring(start_d.toString().length);
+            var start_m = patt.exec(str);
+            str = str.substring(start_m.toString().length+1);
+            var start_y = patt.exec(str);
+            str = str.substring(start_y.toString().length+1);
+            var start_h = patt.exec(str);
+            str = str.substring(start_h.toString().length+1);
+            var start_i = patt.exec(str);
+            str = str.substring(start_i.toString().length+1);
+            var start_s = patt.exec(str);
+            
+            str=this.end_datetime.value;
+            var end_d = patt.exec(str);
+            str = str.substring(end_d.toString().length);
+            var end_m = patt.exec(str);
+            str = str.substring(end_m.toString().length+1);
+            var end_y = patt.exec(str);
+            str = str.substring(end_y.toString().length+1);
+            var end_h = patt.exec(str);
+            str = str.substring(end_h.toString().length+1);
+            var end_i = patt.exec(str);
+            str = str.substring(end_i.toString().length+1);
+            var end_s = patt.exec(str);
+            
+            var start = new Date(   start_y ,
+                                    start_m-1 ,
+                                    start_d ,
+                                    start_h ,
+                                    start_i ,
+                                    start_s
+                                );
+                                
+            var end = new Date( end_y ,
+                                end_m-1 ,
+                                end_d ,
+                                end_h ,
+                                end_i ,
+                                end_s
+                            );
+            
+            if(start.valueOf() >= end.valueOf())return false;
+            else return true;
+            
+        }
+    </script>
+    <form method='POST' action="{{ path('AcmeMsgbBundle_admin_analyze') }}" >
+        Class :
+        <select name="class" onchange="this.form.submit()" method='POST'>
+            <option value=0 {% if class == 0 %} selected="selected"{% endif %}>24hrs</option>
+            {% for cls in classes %}
+                <option value={{ cls.id }} {% if class == cls.id %} selected="selected"{% endif %}>{{ cls.name }} ({{ cls.start|date("H:i") }} ~ {{ cls.end|date("H:i") }})</option>
+            {% endfor %}
+        </select>
+    </form>
+    <br>
+    <center>
+		<script type="text/javascript">
+            $(function () {
+                var chart;
+                $(document).ready(function() {
+                    chart = new Highcharts.Chart({
+                        chart: {
+                            renderTo: 'container',
+                            type: 'line',
+                            marginRight: 130,
+                            marginBottom: 25
+                        },
+                        title: {
+                            text: 
+                                {% set action_str="All" %}
+                                {% if action == "message" %}
+                                    {% set action_str="Message" %}
+                                {% elseif action == "signup" %}
+                                    {% set action_str="Signup" %}
+                                {% elseif action == "login" %}
+                                    {% set action_str="Login" %}
+                                {% elseif action == "logout" %}
+                                    {% set action_str="Logout" %}
+                                {% elseif action == "login&logout" %}
+                                    {% set action_str="Login and Logout" %}
+                                {% elseif action == "reply" %}
+                                    {% set action_str="Reply" %}
+                                {% elseif action == "remove_reply" %}
+                                    {% set action_str="Remove Reply" %}
+                                {% elseif action == "remove_message" %}
+                                    {% set action_str="Remove Message" %}
+                                {% elseif action == "dissaccount" %}
+                                    {% set action_str="Disaccount" %}
+                                {% endif %}
+                                '{% if user %}{{ user }} {% endif %}{{ action_str }}{% if class %} in {% for cls in classes %}{% if cls.id ==class %}{{ cls.name }}{% endif %}{% endfor %}{% endif %}',
+                            x: -20 //center
+                        },
+                        subtitle: {
+                            text: "From {{ start_datetime|date('Y-m-d H:i:s') }} To {{ end_datetime|date('Y-m-d H:i:s') }}",
+                            x: -20
+                        },
+                        xAxis: {
+                            categories: [
+                                {% for key, date in count_logs_date_array %}
+                                    {% if key!=0 %}
+                                        ,
+                                    {% endif %}
+                                    "{{ date|date('m-d') }}"
+                                {% endfor %}
+                            ]
+                        },
+                        yAxis: {
+                            title: {
+                                text: 'Time(s)'
+                            },
+                            plotLines: [{
+                                value: 0,
+                                width: 1,
+                                color: '#808080'
+                            }]
+                        },
+                        tooltip: {
+                            formatter: function() {
+                                var str;
+                                if(this.y<2)str = 'time';
+                                else str = 'times';
+                                return '<b>'+ this.series.name +'</b><br/>'+
+                                    this.x + '<br/>'+
+                                    this.y + " " +str;
+                            }
+                        },
+                        legend: {
+                            layout: 'vertical',
+                            align: 'right',
+                            verticalAlign: 'top',
+                            x: -10,
+                            y: 100,
+                            borderWidth: 0
+                        },
+                        series: [{
+                            name: 'Count' ,
+                            data: [
+                                {% for key ,date in count_logs_date_array %}
+                                    {% if key!=0 %}
+                                        ,
+                                    {% endif %}
+                                    {% set tmp = 0 %}
+                                    {% for count_log in count_logs %}
+                                        {% if count_log.date|date('Y-m-d') == date|date('Y-m-d') %}
+                                            {% set tmp = count_log.num %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {{ tmp }}
+                                {% endfor %}
+                            ]
+                        }]
+                    });
+                });
+                
+            });
+		</script>
+        <br>
+        <div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+        <br>
+        <table>
+            <tr>
+                <th>
+                    Date
+                </th>
+                <th>
+                    Count
+                </th>
+            <tr>
+            {% for count_log in count_logs %}
+                <tr>
+                    <td>
+                        {{ count_log.date }}
+                    </td>
+                    <td>
+                        {{ count_log.num }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <br>
+	    <table border=1>
+            <tr>
+                <th>
+                    <form method="POST" action="{{ path('AcmeMsgbBundle_admin_analyze',{ 'page_size':page_size , 'page':page }) }}">
+                        <input name="sort_account" type="submit" value="Account{% if sort=="account_DESC" %} ˅{% elseif sort=="account_ASC" %} ^{% endif %}" />
+                    </form>
+                </th>
+                <th>
+                    Action
+                </th>
+                <th>
+                    IP
+                </th>
+                <th>
+                    <form method="POST" action="{{ path('AcmeMsgbBundle_admin_analyze',{ 'page_size':page_size , 'page':page }) }}">
+                        <input name="sort_time" type="submit" value="Time{% if sort=="time_DESC" %} ˅{% elseif sort=="time_ASC" %} ^{% endif %}" />
+                    </form>
+                </th>
+            </tr>
+            {% for log in logs %}
+                <tr>
+                    <td>
+                        {% if log.action != "message" %}
+                            {% if admins[log.adminId] is defined %}
+                                <form method="POST" action="{{ path('AcmeMsgbBundle_admin_analyze') }}" >
+                                    <input type="hidden" name="user" value="{{ admins[log.adminId].nickname }}" >
+                                    <input type="submit" name="set_user" value="{{ admins[log.adminId].account }} ({{ admins[log.adminId].nickname }})" >
+                                </form>
+                            {% else %}
+                                <i>{{ log.account }}
+                                ({{ log.nickname }})
+                                (id:{{ log.adminId }})</i>
+                            {% endif %}
+                        {% else %}
+                            {{ log.account }}
+                            ({{ log.nickname }})
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.action == "message" %}
+                            leaved a
+                            {% if msgs[log.targetId] is defined %}
+                                <a href="{{ path('AcmeMsgbBundle_single',{ 'id':msgs[log.targetId].id }) }}" >
+                            {% else %}
+                                <i>
+                            {% endif %}
+                                message
+                            {% if msgs[log.targetId] is defined %}
+                                </a>
+                            {% else %}
+                                (id:{{ log.targetId }})</i>
+                            {% endif %}
+                        {% elseif log.action == "signup" %}
+                            signup
+                        {% elseif log.action == "login" %}
+                            login
+                        {% elseif log.action == "logout" %}
+                            logout
+                        {% elseif log.action == "reply" %}
+                            replied a
+                            {% if msgs[log.targetId] is defined %}
+                                <a href="{{ path('AcmeMsgbBundle_single',{ 'page_size':page_size , 'page':page , 'id':msgs[log.targetId].id }) }}" >
+                            {% else %}
+                                <i>
+                            {% endif %}
+                                message
+                            {% if msgs[log.targetId] is defined %}
+                                </a>
+                            {% else %}
+                                (id:{{ log.targetId }})</i>
+                            {% endif %}
+                        {% elseif log.action == "remove_reply" %}
+                            remove a
+                                {% if msgs[log.targetId] is defined %}
+                                    <a href="{{ path('AcmeMsgbBundle_single',{ 'page_size':page_size , 'page':page , 'id':msgs[log.targetId].id }) }}" >
+                                {% else %}
+                                    <i>
+                                {% endif %}
+                                    reply
+                                {% if msgs[log.targetId] is defined %}
+                                    </a>
+                                {% else %}
+                                    (id:{{ log.targetId }})></i>
+                                {% endif %}
+                        {% elseif log.action == "remove_message" %}
+                            removed a <i>message (id:{{ log.targetId }})</i>
+                        {% elseif log.action == "disaccount" %}
+                            disaccounted
+                            {% if log.adminId == log.targetId %}
+                                itself
+                            {% else %}
+                                an account (id:{{ log.targetId }})
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ log.ip }}
+                    </td>
+                    <td>
+                        {{ log.time|date("Y/m/d H:i:s") }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+	    <!-- PAGE SELECT -->
+	    {% if page!=1 %}
+		    <a href="{{ path('AcmeMsgbBundle_admin_analyze',{'page_size':page_size , 'page':page-1} ) }}">
+                &lt;-Previous</a>
+	    {% endif %}
+	    {% for i in 1..page_num %}
+            {% if page!=i %}
+		        <a href="{{ path('AcmeMsgbBundle_admin_analyze',{'page_size':page_size , 'page':i} ) }}">
+            {% endif %}
+                {{ i }}{% if page!=i %}</a>
+            {% endif %}
+	    {% endfor %}
+	    {% if page!=page_num %}
+		    <a href="{{ path('AcmeMsgbBundle_admin_analyze',{'page_size':page_size , 'page':page+1} ) }}">
+                Next-&gt;</a>
+	    {% endif %}
+	    <!-- END OF PAGE SELECT -->
+    
+    <br>
+    <a href="{{ path('AcmeMsgbBundle_homepage') }}">&lt;-- homepage -- &gt;</a>
+    </center>
+    {% javascripts
+        '@AcmeMsgbBundle/Resources/public/js/highcharts.js'
+        '@AcmeMsgbBundle/Resources/public/js/exporting.js'
+    %}
+        <script src='{{ asset_url }}' type='text/javascript'></script>
+    {% endjavascripts %}
+{% endblock %}

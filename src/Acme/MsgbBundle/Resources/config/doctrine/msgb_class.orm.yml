@@ -1,0 +1,20 @@
+Acme\MsgbBundle\Entity\msgb_class:
+  type: entity
+  table: null
+  fields:
+    id:
+      type: integer
+      id: true
+      generator:
+        strategy: AUTO
+    start:
+      type: datetime
+    end:
+      type: datetime
+    name:
+      type: string
+      length: 255
+    section:
+      type: string
+      length: 255
+  lifecycleCallbacks: {  }

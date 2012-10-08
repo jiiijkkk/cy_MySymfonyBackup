@@ -1,0 +1,25 @@
+{% extends 'AcmeMsgbBundle:Base:base.html.twig' %}
+{% block body %}
+    <center>
+	    <font size=20>Edit</font>
+        <br>
+        <br>
+        <form action="{{ path('AcmeMsgbBundle_admin_edit',{ 'id':id }) }}" method="post" {{ form_enctype(form) }} >
+            {{ form_widget(form._token) }}
+            {% if id == this_id %}
+                Account : {{ form_widget(form.account) }}<br>
+                Password : {{ form_widget(form.password) }}<br>
+            {% endif %}
+            Nickname : {{ form_widget(form.nickname) }}<br>
+            <a href="{{ path('AcmeMsgbBundle_admin_ctrl') }}">&lt;--&nbsp;Back</a>
+            <input type="submit" value="Submit" />
+        </form>
+        <br>
+	    <!-- error -->
+            {% for error in errors %}
+                {{ error.message }}<br>
+            {% endfor %}
+	    <!-- End of error -->
+        <br>
+    </center>
+{% endblock %}

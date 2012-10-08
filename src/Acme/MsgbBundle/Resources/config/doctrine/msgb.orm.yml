@@ -1,0 +1,44 @@
+Acme\MsgbBundle\Entity\msgb:
+  type: entity
+  table: null
+  fields:
+    id:
+      type: integer
+      id: true
+      generator:
+        strategy: AUTO
+    account:
+      type: string
+      length: '255'
+    nickname:
+      type: string
+      length: '255'
+    mobile:
+      type: string
+      length: '255'
+    title:
+      type: string
+      length: '255'
+    contant:
+      type: string
+      length: '1023'
+    time:
+      type: datetime
+      length: null
+      length: '1023'
+    time:
+      type: datetime
+      length: '255'
+    ip:
+      type: string
+      length: '255'
+    replyer:
+      type: string
+      length: '255'
+    reply_contant:
+      type: string
+      length: '255'
+    reply_time:
+      type: datetime
+      length: '255'
+  lifecycleCallbacks: {  }

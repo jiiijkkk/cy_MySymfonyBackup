@@ -1,0 +1,55 @@
+{% extends 'AcmeMsgbBundle:Base:base.html.twig' %}
+{% block body %}
+    <center>
+        <font size=20>Admin Controller</font>
+        <table>
+            <tr>
+                <th>
+                    Account
+                </th>
+                <th>
+                    Nickname
+                </th>
+                <th>
+                    Action
+                </th>
+            </tr>
+            {% for admin in admins %}
+                <tr>
+                    <td>
+                        {% if online_ids[admin.id] is not defined %}
+                            <i><small>
+                        {% elseif admin.id == admin_user %}
+                            <b><big>
+                        {% endif %}
+                        {{ admin.account }}
+                        {% if online_ids[admin.id] is not defined %}
+                            </small></i>
+                        {% elseif admin.id == admin_user %}
+                            </big></b>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if online_ids[admin.id] is not defined %}
+                            <i><small>
+                        {% elseif admin.id == admin_user %}
+                            <b><big>
+                        {% endif %}
+                        {{ admin.nickname }}
+                        {% if online_ids[admin.id] is not defined %}
+                            </small></i>
+                        {% elseif admin.id == admin_user %}
+                            </big></b>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('AcmeMsgbBundle_admin_edit',{ 'id':admin.id } ) }}" >[Edit]</a>
+                        <a href="{{ path('AcmeMsgbBundle_admin_delete',{ 'id':admin.id } ) }}">[Delete]</a>
+                    </td>
+                </tr>
+            {% endfor %}            
+        </table>
+        <br>
+        <a href="{{ path('AcmeMsgbBundle_homepage') }}">&lt;--&nbsp;Homepage&nbsp;--&gt;</a>
+    </center>
+{% endblock %}

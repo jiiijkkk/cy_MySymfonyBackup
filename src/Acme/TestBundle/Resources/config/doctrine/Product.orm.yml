@@ -1,0 +1,19 @@
+Acme\TestBundle\Entity\Product:
+  type: entity
+  table: null
+  fields:
+    id:
+      type: integer
+      id: true
+      generator:
+        strategy: AUTO
+    newF:
+      type: string
+      length: 255
+    name:
+      type: string
+      length: 255
+    type:
+      type: string
+      length: 255
+  lifecycleCallbacks: {  }

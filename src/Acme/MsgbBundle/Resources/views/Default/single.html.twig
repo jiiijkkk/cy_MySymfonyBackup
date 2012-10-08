@@ -1,0 +1,99 @@
+{% extends 'AcmeMsgbBundle:Base:base.html.twig' %}
+{% block body %}
+    <center>
+	    <table border=1>
+		    <tr>
+                <th width=500 align="left">
+                    {{ msg.title }}
+                    ...
+                    From
+                    {{ msg.ip }}
+                    @
+                    {{ msg.time|date("Y/m/d H:i:s") }}
+                </th>
+                <th>                        
+                    <a href="{{ path('AcmeMsgbBundle_kill',{'page_size':page_size , 'id':msg.id} ) }}">[Delete]</a>
+                </th>
+            </tr> 
+            <tr>
+                <td colspan=2>
+                    {{ msg.account }}
+                    ({{ msg.nickname }})
+		            {% image '@AcmeMsgbBundle/Resources/public/images/mobile.png' %}
+			            <img src="{{ asset_url }}" title="{{ msg.mobile }}" />
+		            {% endimage %}
+		            {% image '@AcmeMsgbBundle/Resources/public/images/ip.gif' %}
+			            <img src="{{ asset_url }}" title="{{ msg.ip }}" />
+		            {% endimage %}
+                    says:<br>
+                    {{ msg.contant }}
+                </td>
+            </tr>
+            <form action="{{ path('AcmeMsgbBundle_reply',{ 'page_size':page_size , 'page':page , 'id':msg.id }) }}" method="post" >
+                <tr>
+                    <td colspan=2>
+                        <div class="mid" id="show_reply_{{ msg.id }}" style="display: block;">
+                            {% if msg.replyer!="" %}
+                                {% if replyer[0] is defined %}
+                                    {{ replyer[0].account }}
+                                    ({{ replyer[0].nickname }})
+                                {% else %}
+                                    (Deleted Admin)
+                                {% endif %}
+                                reply
+                                @
+                                {{ msg.reply_time|date("Y/m/d H:i:s") }}
+                                :<br>
+                                {{ msg.reply_contant }}
+                                <a onclick="javascript:ShwHid('{{ msg.id }}')" href="javascript:">[Edit]</a>
+                                <a href="{{ path('AcmeMsgbBundle_kill_reply',{ 'page_size':page_size , 'page':page , 'id':msg.id , 'action': 'single' }) }}" method="post">[Delete]</a>
+                            {% else %}
+                                <a onclick="javascript:ShwHid('{{ msg.id }}')" href="javascript:">
+                                    [Reply]
+                                </a>
+                            {% endif %}
+                        </div>
+                        <div class="mid" id="reply_{{ msg.id }}" style="display: none;">
+                            <form action="{{ path('AcmeMsgbBundle_quick_reply',{'page_size':page_size , 'page':page , 'id':msg.id} ) }}" method="POST">
+                                <table>
+                                    <tr>
+                                        <td rowspan=2>
+                                            <textarea name="contant">{{ msg.reply_contant }}</textarea>
+                                        </td>
+                                        <td>
+                                            <a onclick="javascript:ShwHid('{{ msg.id }}')" href="javascript:">
+                                                Cancel[x]
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type="submit" value="Reply" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=2>
+                        <a href="{{ path('AcmeMsgbBundle_homepage',{ 'page_size':page_size , 'page':page}) }}" >&lt;--&nbsp;Back</a>
+                    </td>
+                </tr>
+            </form>
+	    </table>	
+    </center>
+    <script language="JavaScript">
+        function ShwHid(divId){
+            if(document.getElementById("reply_"+divId).style.display == 'none'){
+                document.getElementById("reply_"+divId).style.display='block';
+                document.getElementById("show_reply_"+divId).style.display='none';
+            }
+            else{
+                document.getElementById("reply_"+divId).style.display='none';
+                document.getElementById("show_reply_"+divId).style.display='block';
+            }
+        }
+    </script>
+{% endblock %}

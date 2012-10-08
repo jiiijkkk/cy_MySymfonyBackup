@@ -1,0 +1,28 @@
+Acme\MsgbBundle\Entity\msgb_log:
+  type: entity
+  table: null
+  fields:
+    id:
+      type: integer
+      id: true
+      generator:
+        strategy: AUTO
+    admin_id:
+      type: integer
+    account:
+      type: string
+      length: 255
+    nickname:
+      type: string
+      length: 255
+    action:
+      type: string
+      length: 255
+    target_id:
+      type: integer
+    ip:
+      type: string
+      length: 255
+    time:
+      type: datetime
+  lifecycleCallbacks: {  }

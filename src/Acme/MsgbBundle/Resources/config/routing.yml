@@ -1,0 +1,81 @@
+AcmeMsgbBundle_homepage:
+    pattern:  /{page_size}/{page}
+    defaults: { _controller: AcmeMsgbBundle:Default:index , page_size: 10 , page: 1 }
+    requirements: 
+        page_size: \d+
+        page: \d+
+AcmeMsgbBundle_single:
+    pattern:  /single/{page_size}/{page}/{id}
+    defaults: { _controller: AcmeMsgbBundle:Admin_Message:single , page_size: 10 , page: 1 }
+    requirements: 
+        page_size: \d+
+        page: \d+
+AcmeMsgbBundle_kill:
+    pattern:  /kill/{page_size}/{id}
+    defaults: { _controller: AcmeMsgbBundle:Admin_Message:kill }
+AcmeMsgbBundle_reply:
+    pattern:  /reply/{page_size}/{page}/{id}
+    defaults: { _controller: AcmeMsgbBundle:Admin_Message:reply }
+AcmeMsgbBundle_quick_reply:
+    pattern:  /quick_reply/{page_size}/{page}/{id}
+    defaults: { _controller: AcmeMsgbBundle:Admin_Message:quick_reply }
+AcmeMsgbBundle_multikill:
+    pattern:  /multikill/{page_size}/{page}
+    defaults: { _controller: AcmeMsgbBundle:Admin_Message:multikill , page_size: 10 , page: 1  }
+    requirements: 
+        page_size: \d+
+        page: \d+
+AcmeMsgbBundle_kill_reply:
+    pattern:  /kill_reply/{page_size}/{page}/{id}/{action}
+    defaults: { _controller: AcmeMsgbBundle:Admin_Message:kill_reply }
+AcmeMsgbBundle_signup:
+    pattern:  /signup/{page_size}/{page}
+    defaults: { _controller: AcmeMsgbBundle:Default:signup , page_size: 10 , page: 1 }
+    requirements: 
+        page_size: \d+
+        page: \d+
+AcmeMsgbBundle_login:
+    pattern:  /login/{page_size}/{page}
+    defaults: { _controller: AcmeMsgbBundle:Default:login , page_size: 10 , page: 1  }
+    requirements: 
+        page_size: \d+
+        page: \d+
+AcmeMsgbBundle_logout:
+    pattern:  /logout/{page_size}/{page}
+    defaults: { _controller: AcmeMsgbBundle:Admin:logout , page_size: 10 , page: 1  }
+    requirements: 
+        page_size: \d+
+        page: \d+
+AcmeMsgbBundle_disaccount:
+    pattern:  /disaccount/{page_size}/{page}
+    defaults: { _controller: AcmeMsgbBundle:Admin:disaccount , page_size: 10 , page: 1  }
+    requirements: 
+        page_size: \d+
+        page: \d+
+AcmeMsgbBundle_admin_ctrl:
+    pattern:  /admin_ctrl
+    defaults: { _controller: AcmeMsgbBundle:Admin:admin_ctrl }
+AcmeMsgbBundle_admin_edit:
+    pattern:  /admin_edit/{id}
+    defaults: { _controller: AcmeMsgbBundle:Admin:admin_edit }
+AcmeMsgbBundle_admin_delete:
+    pattern:  /admin_delete/{id}
+    defaults: { _controller: AcmeMsgbBundle:Admin:admin_delete }
+AcmeMsgbBundle_admin_log:
+    pattern:  /log/{page_size}/{page}/{account}
+    defaults: { _controller: AcmeMsgbBundle:Admin:admin_log , page_size: 20 , page: 1 ,account: "" }
+    requirements: 
+        page_size: \d+
+        page: \d+
+AcmeMsgbBundle_admin_analyze:
+    pattern:  /analyze/{page_size}/{page}
+    defaults: {_controller: AcmeMsgbBundle:Admin:admin_analyze , page_size: 20 , page: 1 }
+    requirements: 
+        page_size: \d+
+        page: \d+
+AcmeMsgbBundle_admin_edit_classes:
+    pattern:  /edit_classes
+    defaults: {_controller: AcmeMsgbBundle:Admin:admin_edit_classes }
+AcmeMsgbBundle_admin_menu:
+    pattern:  /menu
+    defaults: { _controller: AcmeMsgbBundle:Admin:admin_menu }

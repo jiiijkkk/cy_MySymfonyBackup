@@ -1,0 +1,43 @@
+{% extends 'AcmeMsgbBundle:Base:base.html.twig' %}
+{% block body %}
+    <center>
+	    <font size=20>Login</font>
+        <br>
+        <br>
+        <form action="{{ path('AcmeMsgbBundle_login') }}" method="post" {{ form_enctype(form) }} onsubmit="return validateForm();" >
+            {{ form_widget(form._token) }}
+            <div>Account : {{ form_widget(form.account) }}</div>
+            <div>Password : {{ form_widget(form.password) }}</div>
+            <input type="submit" value="Submit" />
+        </form>
+
+	    <!-- VALIDATE FORM -->
+        <script>
+            function validateForm(){
+                var vilad_account=new RegExp("^[a-zA-Z0-9]{4,12}$");
+                var vilad_password=new RegExp("^[a-zA-Z0-9]{4,12}$");
+                var alert_msg="";
+                if(!vilad_account.test(document.getElementById('Msgb_admin_account').value))
+                    alert_msg+="Account : Please insert 4~12 alphabets or numbers\n";
+                if(!vilad_password.test(document.getElementById('Msgb_admin_password').value))
+                    alert_msg+="Password : Please insert 4~12 alphabets or numbers\n";
+                if(alert_msg!=""){
+                    alert(alert_msg);
+                    return false;
+                }
+                else
+                    return true;
+            }
+        </script>
+	    <!-- END OF VALIDATE FORM -->
+
+        <br>
+	    <!-- error -->
+            {% for error in errors %}
+                {{ error.message }}<br>
+            {% endfor %}
+	    <!-- End of error -->
+        <br>
+        <a href="{{ path('AcmeMsgbBundle_homepage') }}">&lt;--&nbsp;Homepage&nbsp;--&gt;</a>
+    </center>
+{% endblock %}

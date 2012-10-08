@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Simple Message Board</title>
+        {% if stylesheet == "Default" %}
+            {% stylesheets '@AcmeMsgbBundle/Resources/public/css/Default.css' %}
+                <link href="{{ asset_url }}" rel="stylesheet" type="text/css" />
+            {% endstylesheets %}
+        {% elseif stylesheet == "Black_in_White" %}
+            {% stylesheets '@AcmeMsgbBundle/Resources/public/css/Black_in_White.css' %}
+                <link href="{{ asset_url }}" rel="stylesheet" type="text/css" />
+            {% endstylesheets %}
+        {% elseif stylesheet == "White_in_Black" %}
+            {% stylesheets '@AcmeMsgbBundle/Resources/public/css/White_in_Black.css' %}
+                <link href="{{ asset_url }}" rel="stylesheet" type="text/css" />
+            {% endstylesheets %}
+        {% endif %}
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

@@ -1,0 +1,3 @@
+AcmeMsgBundle_homepage:
+    pattern:  /
+    defaults: { _controller: AcmeMsgBundle:Default:index }

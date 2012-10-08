@@ -1,0 +1,28 @@
+Acme\MsgBundle\Entity\msg:
+  type: entity
+  table: null
+  fields:
+    id:
+      type: integer
+      id: true
+      generator:
+        strategy: AUTO
+    name:
+      type: string
+      length: '255'
+    mail:
+      type: string
+      length: '255'
+    contant:
+      type: string
+      length: '255'
+    reply:
+      type: string
+      length: '255'
+    replyer:
+      type: string
+      length: '255'
+    timestamp:
+      type: datetime
+      length: null
+  lifecycleCallbacks: {  }

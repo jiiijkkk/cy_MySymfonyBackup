@@ -1,0 +1,115 @@
+{% extends 'AcmeMsgbBundle:Base:base.html.twig' %}
+{% block body %}
+    <center>
+	    <table border=1>
+            <tr>
+                <th colspan=3 >
+                    Log
+                </th>
+            </tr>
+            {% for log in logs %}
+                <tr>
+                    <td>
+                        {% if log.action != "message" %}
+                            {% if admins[log.adminId] is defined %}
+                                <a href="{{ path('AcmeMsgbBundle_admin_log',{ 'page_size':page_size , 'page':1 , 'account':log.adminId }) }}" >
+                                {{ admins[log.adminId].account }}
+                                ({{ admins[log.adminId].nickname }})</a>
+                            {% else %}
+                                <i>{{ log.account }}
+                                ({{ log.nickname }})
+                                (id:{{ log.adminId }})</i>
+                            {% endif %}
+                        {% else %}
+                            {{ log.account }}
+                            ({{ log.nickname }})
+                        {% endif %}
+                        {% if log.action == "message" %}
+                            leaved a
+                            {% if msgs[log.targetId] is defined %}
+                                <a href="{{ path('AcmeMsgbBundle_single',{ 'id':msgs[log.targetId].id }) }}" >
+                            {% else %}
+                                <i>
+                            {% endif %}
+                                message
+                            {% if msgs[log.targetId] is defined %}
+                                </a>
+                            {% else %}
+                                (id:{{ log.targetId }})</i>
+                            {% endif %}
+                        {% elseif log.action == "signup" %}
+                            signup
+                        {% elseif log.action == "login" %}
+                            login
+                        {% elseif log.action == "logout" %}
+                            logout
+                        {% elseif log.action == "reply" %}
+                            replied a
+                            {% if msgs[log.targetId] is defined %}
+                                <a href="{{ path('AcmeMsgbBundle_single',{ 'page_size':page_size , 'page':page , 'id':msgs[log.targetId].id }) }}" >
+                            {% else %}
+                                <i>
+                            {% endif %}
+                                message
+                            {% if msgs[log.targetId] is defined %}
+                                </a>
+                            {% else %}
+                                (id:{{ log.targetId }})</i>
+                            {% endif %}
+                        {% elseif log.action == "remove_reply" %}
+                            remove a
+                                {% if msgs[log.targetId] is defined %}
+                                    <a href="{{ path('AcmeMsgbBundle_single',{ 'page_size':page_size , 'page':page , 'id':msgs[log.targetId].id }) }}" >
+                                {% else %}
+                                    <i>
+                                {% endif %}
+                                    reply
+                                {% if msgs[log.targetId] is defined %}
+                                    </a>
+                                {% else %}
+                                    (id:{{ log.targetId }})></i>
+                                {% endif %}
+                        {% elseif log.action == "remove_message" %}
+                            removed a <i>message (id:{{ log.targetId }})</i>
+                        {% elseif log.action == "disaccount" %}
+                            disaccounted
+                            {% if log.adminId == log.targetId %}
+                                itself
+                            {% else %}
+                                an account (id:{{ log.targetId }})
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        from
+                        {{ log.ip }}
+                    </td>
+                    <td>
+                        @
+                        {{ log.time|date("Y/m/d H:i:s") }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+	    <!-- PAGE SELECT -->
+	    {% if page!=1 %}
+		    <a href="{{ path('AcmeMsgbBundle_admin_log',{'page_size':page_size , 'page':page-1} ) }}">
+                &lt;-Previous</a>
+	    {% endif %}
+	    {% for i in 1..page_num %}
+            {% if page!=i %}
+		        <a href="{{ path('AcmeMsgbBundle_admin_log',{'page_size':page_size , 'page':i} ) }}">
+            {% endif %}
+                {{ i }}{% if page!=i %}</a>
+            {% endif %}
+	    {% endfor %}
+	    {% if page!=page_num %}
+		    <a href="{{ path('AcmeMsgbBundle_admin_log',{'page_size':page_size , 'page':page+1} ) }}">
+                Next-&gt;</a>
+	    {% endif %}
+	    <!-- END OF PAGE SELECT -->
+        <br>
+        <a href="{{ path('AcmeMsgbBundle_homepage') }}">&lt;--&nbsp;Homepage&nbsp;--&gt;</a>
+    </center>
+{% endblock %}
